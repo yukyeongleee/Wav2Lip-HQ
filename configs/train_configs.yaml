@@ -1,53 +1,51 @@
 # warning: do not use *tuple* in yaml file
 
 # model 
-model_id: MyModel
+model_id: Wav2Lip
 
 # multi-GPUs
 use_mGPU: True
 
 # validation
 use_validation: True
-valid_dataset_root: ./assets/k-celeb
+valid_dataset_root: {
+    'video': '/home/leee/data/preprocessed/HDTF-25fps-96',
+    'audio': '/home/leee/data/preprocessed/HDTF-mel'
+}
 
 # wandb
 use_wandb: True
 wandb_alert_thres: 1000
 
 # root
-train_dataset_root_list: [
-                '../dataset/CelebHQ',
-                '../dataset/ffhq16k'
-            ]
+train_dataset_root: {
+    'video': '/home/leee/data/preprocessed/HDTF-25fps-96',
+    'audio': '/home/leee/data/preprocessed/HDTF-mel'
+}
 
 save_root: train_result
 
 # learning rate
 lr_G: 0.0001
-lr_D: 0.00001
+lr_D: 0.0001
 
 # optimizer 
-optimizer: Ranger # [Ranger, Adam]
-betas: [0.95, 0.999] # default: Adam (0.9, 0.999) / Ranger (0.95, 0.999)
+optimizer: Adam # [Ranger, Adam]
+betas: [0.5, 0.999] # default: Adam (0.9, 0.999) / Ranger (0.95, 0.999)
 
 # weight of loss
-W_adv: 1
-W_id: 5
-W_recon: 10
-W_cycle: 10
-W_lpips: 10
-W_attr: 20
-W_feat: 10
+W_sync: 0.0
+W_perc: 0.07
 
 # hyperparameters
 same_prob: 0.2
-batch_per_gpu: 2
+batch_per_gpu: 32
 max_step: 400000
 
 # log cycle
 loss_cycle: 10
-test_cycle: 1000
-ckpt_cycle: 10000
+test_cycle: 100
+ckpt_cycle: 1000
 
 # ckpt path
 # load checkpoints from ./train_result/{ckpt_id}/ckpt/G_{ckpt_step}.pt
@@ -56,3 +54,9 @@ ckpt_cycle: 10000
 load_ckpt: False
 ckpt_id: 
 ckpt_step:
+
+# syncnet
+video_step_size: 5
+mel_step_size: 16
+img_size: 96
+fps: 25

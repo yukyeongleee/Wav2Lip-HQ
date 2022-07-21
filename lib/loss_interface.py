@@ -1,5 +1,5 @@
 import abc
-from packages.lpips.lpips import LPIPS
+# from packages.lpips.lpips import LPIPS
 import torch
 import torch.nn.functional as F
 import time
@@ -62,11 +62,11 @@ class Loss:
     def get_id_loss(a, b):
         return (1 - torch.cosine_similarity(a, b, dim=1)).mean()
 
-    @classmethod
-    def get_lpips_loss(cls, a, b):
-        if not hasattr(cls, 'lpips'):
-            cls.lpips = LPIPS().eval().to("cuda")
-        return cls.lpips(a, b)
+    # @classmethod
+    # def get_lpips_loss(cls, a, b):
+    #     if not hasattr(cls, 'lpips'):
+    #         cls.lpips = LPIPS().eval().to("cuda")
+    #     return cls.lpips(a, b)
 
     @classmethod
     def get_L1_loss(cls, a, b):   

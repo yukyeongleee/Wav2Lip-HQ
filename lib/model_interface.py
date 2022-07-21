@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from lib.dataset import PairedFaceDatasetTrain, PairedFaceDatasetValid
 from lib import utils, checkpoint
 import numpy as np
-from packages import Ranger
+# from packages import Ranger
 
 class ModelInterface(metaclass=abc.ABCMeta):
     """
