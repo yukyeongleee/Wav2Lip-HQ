@@ -27,23 +27,23 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Innerverz-AI/CodeTemplate">
-    <img src="assets/templates/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/yukyeongleee/Wav2Lip-HQ">
+    <!-- <img src="assets/templates/logo.png" alt="Logo" width="80" height="80"> -->
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">High Quality Wav2Lip</h3>
 
   <p align="center">
-    project_description
+    Project description will be added
     <br />
-    <a href="https://github.com/Innerverz-AI/CodeTemplate"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/yukyeongleee/Wav2Lip-HQ"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Innerverz-AI/CodeTemplate">View Demo</a>
+    <a href="https://github.com/yukyeongleee/Wav2Lip-HQ">View Demo</a>
     ·
-    <a href="https://github.com/Innerverz-AI/CodeTemplate/issues">Report Bug</a>
+    <a href="https://github.com/Wav2Lip-HQ/issues">Report Bug</a>
     ·
-    <a href="https://github.com/Innerverz-AI/CodeTemplate/issues">Request Feature</a>
+    <a href="https://github.com/yukyeongleee/Wav2Lip-HQ/issues">Request Feature</a>
   </p>
 </div>
 
@@ -75,9 +75,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `Innerverz-AI`, `CodeTemplate`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+Changes from the [official implementation](https://github.com/Rudrabha/Wav2Lip)
+- Readability increased!
+- More efficient GPU usage
+  - Instead of computing STFT everytime in the `__getitem__` function, mel-spectrograms are computed and saved as .npy files beforehand.
+- Available for arbitrary datasets
+  - The codes for dataset preprocessing(fps and sync corrections) are provided. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -125,10 +130,8 @@ python scripts/train.py {run_id}
 <!-- TDL -->
 ## TDL
 
-- [x] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Add dataset preprocessing code
+- [ ] Add sync-correction code
 
 See the [open issues](https://github.com/Innerverz-AI/CodeTemplate/issues) for a full list of proposed features (and known issues).
 
@@ -155,9 +158,9 @@ Don't forget to give the project a star! Thanks again!
 <!-- CONTACT -->
 ## Contact
 
-Contact us: innerverz@innerverz.com
+Contact us: ukok828@gmail.com
 
-Project Link: [https://github.com/Innerverz-AI/CodeTemplate](https://github.com/Innerverz-AI/CodeTemplate)
+Project Link: [https://github.com/yukyeongleee/Wav2Lip-HQ](https://github.com/yukyeongleee/Wav2Lip-HQ)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -165,19 +168,21 @@ Project Link: [https://github.com/Innerverz-AI/CodeTemplate](https://github.com/
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+* [Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip): The official implementation
+* [Innerverz-AI/CodeTemplate](https://github.com/Innerverz-AI/CodeTemplate)
+* [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/Innerverz-AI/CodeTemplate.svg?style=for-the-badge
-[contributors-url]: https://github.com/Innerverz-AI/CodeTemplate/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Innerverz-AI/CodeTemplate.svg?style=for-the-badge
-[forks-url]: https://github.com/Innerverz-AI/CodeTemplate/network/members
-[stars-shield]: https://img.shields.io/github/stars/Innerverz-AI/CodeTemplate.svg?style=for-the-badge
-[stars-url]: https://github.com/Innerverz-AI/CodeTemplate/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Innerverz-AI/CodeTemplate.svg?style=for-the-badge
-[issues-url]: https://github.com/Innerverz-AI/CodeTemplate/issues
+[contributors-shield]: https://img.shields.io/github/contributors/yukyeongleee/Wav2Lip-HQ.svg?style=for-the-badge
+[contributors-url]: https://github.com/yukyeongleee/Wav2Lip-HQ/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Iyukyeongleee/Wav2Lip-HQ.svg?style=for-the-badge
+[forks-url]: https://github.com/yukyeongleee/Wav2Lip-HQ/network/members
+[stars-shield]: https://img.shields.io/github/stars/yukyeongleee/Wav2Lip-HQ.svg?style=for-the-badge
+[stars-url]: https://github.com/yukyeongleee/Wav2Lip-HQ/stargazers
+[issues-shield]: https://img.shields.io/github/issues/yukyeongleee/Wav2Lip-HQ.svg?style=for-the-badge
+[issues-url]: https://github.com/yukyeongleee/Wav2Lip-HQ/issues
 [product-screenshot]: images/screenshot.png
