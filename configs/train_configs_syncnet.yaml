@@ -1,15 +1,15 @@
 # warning: do not use *tuple* in yaml file
 
 # model 
-model_id: Wav2Lip
+model_id: SyncNet
 
 # multi-GPUs
 use_mGPU: True
 
 # validation
-use_validation: True
+use_validation: False
 valid_dataset_root: {
-    'video': '/home/leee/data/HDTF/frame-s3fd/',
+    'video': '/home/leee/data/HDTF/frame-s3fd',
     'audio': '/home/leee/data/HDTF/mel'
 }
 
@@ -19,27 +19,24 @@ wandb_alert_thres: 1000
 
 # root
 train_dataset_root: {
-    'video': '/home/leee/data/HDTF/frame-s3fd/',
+    'video': '/home/leee/data/HDTF/frame-s3fd',
     'audio': '/home/leee/data/HDTF/mel'
 }
 
-save_root: wav2lip_train_result
+save_root: syncnet_train_result
 
 # learning rate
-lr_G: 0.0001
-lr_D: 0.0001
+lr_S: 0.0001
 
 # optimizer 
 optimizer: Adam # [Ranger, Adam]
 betas: [0.5, 0.999] # default: Adam (0.9, 0.999) / Ranger (0.95, 0.999)
 
 # weight of loss
-W_sync: 0.0
-W_perc: 0.5 # 0.07
 
 # hyperparameters
 same_prob: 0.2
-batch_per_gpu: 32
+batch_per_gpu: 64 # 64 (official)
 max_step: 400000
 
 # log cycle
@@ -51,8 +48,8 @@ ckpt_cycle: 10000
 # load checkpoints from ./train_result/{ckpt_id}/ckpt/G_{ckpt_step}.pt
 # if ckpt_id is empty, load G_latest.pt and D_latest.pt
 # Note that an empty space is None, but None is "None"
-load_ckpt: True
-ckpt_id: run1
+load_ckpt: False
+ckpt_id: 
 ckpt_step:
 
 # syncnet
