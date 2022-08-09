@@ -11,7 +11,7 @@ class Config(object):
             return Config(yaml.load(stream, Loader=yaml.FullLoader))
 
     def save_yaml(self):
-        with open(f'train_result/{self.run_id}/config_{self.run_id}.yaml', 'w') as f:
+        with open(f'{self.save_root}/{self.run_id}/config_{self.run_id}.yaml', 'w') as f:
             yaml.dump(self.__dict__, f)
 
     @staticmethod

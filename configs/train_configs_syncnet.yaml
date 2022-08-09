@@ -9,7 +9,7 @@ use_mGPU: True
 # validation
 use_validation: False
 valid_dataset_root: {
-    'video': '/home/leee/data/HDTF/frame-s3fd',
+    'video': '/home/leee/data/HDTF/frame-insight',
     'audio': '/home/leee/data/HDTF/mel'
 }
 
@@ -19,14 +19,14 @@ wandb_alert_thres: 1000
 
 # root
 train_dataset_root: {
-    'video': '/home/leee/data/HDTF/frame-s3fd',
+    'video': '/home/leee/data/HDTF/frame-insight',
     'audio': '/home/leee/data/HDTF/mel'
 }
 
-save_root: syncnet_train_result
+save_root: 'train_result/syncnet'
 
 # learning rate
-lr_S: 0.0001
+lr_S: 0.00005 # 0.0001
 
 # optimizer 
 optimizer: Adam # [Ranger, Adam]
@@ -36,11 +36,11 @@ betas: [0.5, 0.999] # default: Adam (0.9, 0.999) / Ranger (0.95, 0.999)
 
 # hyperparameters
 same_prob: 0.2
-batch_per_gpu: 64 # 64 (official)
+batch_per_gpu: 32 # 64 (official)
 max_step: 400000
 
 # log cycle
-loss_cycle: 100
+loss_cycle: 25
 test_cycle: 1000
 ckpt_cycle: 10000
 

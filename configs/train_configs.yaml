@@ -9,7 +9,7 @@ use_mGPU: True
 # validation
 use_validation: True
 valid_dataset_root: {
-    'video': '/home/leee/data/HDTF/frame-s3fd/',
+    'video': '/home/leee/data/HDTF/frame-insight/',
     'audio': '/home/leee/data/HDTF/mel'
 }
 
@@ -19,11 +19,11 @@ wandb_alert_thres: 1000
 
 # root
 train_dataset_root: {
-    'video': '/home/leee/data/HDTF/frame-s3fd/',
+    'video': '/home/leee/data/HDTF/frame-insight/',
     'audio': '/home/leee/data/HDTF/mel'
 }
 
-save_root: wav2lip_train_result
+save_root: 'train_result/wav2lip'
 
 # learning rate
 lr_G: 0.0001

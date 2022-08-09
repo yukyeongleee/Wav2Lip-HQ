@@ -3,6 +3,7 @@ from glob import glob
 import random
 import cv2
 import numpy as np
+import pandas as pd
 
 import torch
 from torch.utils.data import Dataset
@@ -41,22 +42,27 @@ class AudioVisualDataset(Dataset):
         #     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         # ])
 
+        self.offset_df = pd.read_csv("./assets/offset_edited.csv", index_col='filename')
+
         if isMaster:
             print(f"Dataset of {self.__len__()} videos constructed for the training.")
 
     def get_window(self, vid_name, starting_frame):
         """
-            Get **self.video_step_size** frames starting from the **starting_frame** 
+            Get **self.video_step_size** frames starting from the **starting_frame** + **offset**
         """
         starting_id = int(os.path.basename(starting_frame).split('.')[0])
+        offset = self.offset_df.loc[os.path.basename(vid_name)]['offset']
+        starting_id -= offset
+        if starting_id < 0:
+            raise Exception("Negative Starting Frame Number") 
 
         frames_in_window = []
         for frame_id in range(starting_id, starting_id + self.video_step_size):
-            frame = os.path.join(vid_name, '{}.jpg'.format(frame_id))
+            frame = os.path.join(vid_name, '{0:>06d}.png'.format(frame_id))
             if not os.path.isfile(frame): 
                 raise Exception("Missing Frame Exception") 
             frames_in_window.append(frame)
-
         return frames_in_window
 
     def read_window(self, frames_in_window):
@@ -103,7 +109,7 @@ class AudioVisualDataset(Dataset):
             # Choose the video
             item = random.randint(0, len(self.video_path_list) - 1)
             vid_name = self.video_path_list[item]
-            img_names = list(glob(os.path.join(vid_name, '*.jpg')))
+            img_names = list(glob(os.path.join(vid_name, '*.png')))
             
             if len(img_names) <= 3 * self.video_step_size:
                 continue
@@ -124,7 +130,7 @@ class AudioVisualDataset(Dataset):
             
             try: 
                 # Read the window of length **self.video_step_size**
-                frame_names = self.get_window(vid_name, chosen) # 
+                frame_names = self.get_window(vid_name, chosen) 
                 window = self.read_window(frame_names)
 
                 # Load corresponding mel-spectrograms
