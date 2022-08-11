@@ -7,7 +7,7 @@ model_id: SyncNet
 use_mGPU: True
 
 # validation
-use_validation: False
+use_validation: True
 valid_dataset_root: {
     'video': '/home/leee/data/HDTF/frame-insight',
     'audio': '/home/leee/data/HDTF/mel'
@@ -26,7 +26,7 @@ train_dataset_root: {
 save_root: 'train_result/syncnet'
 
 # learning rate
-lr_S: 0.00005 # 0.0001
+lr_S: 0.0001 # 0.0001
 
 # optimizer 
 optimizer: Adam # [Ranger, Adam]
@@ -41,19 +41,21 @@ max_step: 400000
 
 # log cycle
 loss_cycle: 25
-test_cycle: 1000
+test_cycle: 100
 ckpt_cycle: 10000
 
 # ckpt path
 # load checkpoints from ./train_result/{ckpt_id}/ckpt/G_{ckpt_step}.pt
 # if ckpt_id is empty, load G_latest.pt and D_latest.pt
 # Note that an empty space is None, but None is "None"
-load_ckpt: False
+load_ckpt: 
 ckpt_id: 
-ckpt_step:
+ckpt_step: 
 
 # syncnet
 video_step_size: 5
 mel_step_size: 16
 img_size: 96
 fps: 25
+
+tighter_box: True # True for 48 x 48 inputs, False for 48 x 96 inputs

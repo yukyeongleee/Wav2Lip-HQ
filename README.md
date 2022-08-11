@@ -77,12 +77,13 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Changes from the [official implementation](https://github.com/Rudrabha/Wav2Lip)
-- Readability increased!
+### Changes from the [official implementation](https://github.com/Rudrabha/Wav2Lip)
 - More efficient GPU usage
-  - Instead of computing STFT everytime in the `__getitem__` function, mel-spectrograms are computed and saved as .npy files beforehand.
+  - Multi-GPU supported.
+  - To avoid bottleneck, mel-spectrograms are computed and saved as .npy files beforehand. (Previously, STFT is computed everytime when the `__getitem__` function is called)
 - Available for arbitrary datasets
   - The codes for dataset preprocessing(fps and sync corrections) are provided. 
+- Readability increased!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -109,16 +110,38 @@ pip install -r requirements.txt
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+### Preprocess
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+```sh
+cd scripts/preprocess
+```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+To begin with, the audio files are resampled with the sampling rate of 16000Hz. Also, STFT is applied to the resampled audio signals to obtain corresponding mel-spectrograms.
+
+``` sh
+python process_audio.py
+```
+
+Since the video files downloaded from YouTube have different frame rates(FPS), we should equalize this rate. The terminal command `ffmpeg` is used for frame rate conversion. The video length remains the same after conversion, so the audio doesn't have to be modified.
+
+``` sh
+python process_video.py
+```
+
+To avoid the bottleneck at the data loading period, we crop the face region from each frame and save it. (No resizing, Not square) 
+``` sh
+python extract_face.py
+```
+
+**[For SyncNet Traning]** Training [SyncNet](https://github.com/joonson/syncnet_python) requires images of 224 x 224. The face images obtained by the previous step are padded to make a square and then resized.
+
+``` sh
+python resize_face.py
+```
 
 ### Train
 
-```python
-
+```sh
 git clone https://github.com/Innerverz-AI/CodeTemplate.git
 cd CodeTemplate 
 python scripts/train.py {run_id}
@@ -126,11 +149,13 @@ python scripts/train.py {run_id}
 # ex) python scripts/train.py first_try
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 
 <!-- TDL -->
 ## TDL
 
-- [ ] Add dataset preprocessing code
+- [x] Add dataset preprocessing code
 - [ ] Add sync-correction code
 
 See the [open issues](https://github.com/Innerverz-AI/CodeTemplate/issues) for a full list of proposed features (and known issues).

@@ -5,11 +5,11 @@ import torch.nn.functional as F
 from wav2lip.blocks import conv_block
 
 class SyncNet(nn.Module):
-    def __init__(self):
+    def __init__(self, tighter_box=False):
         super(SyncNet, self).__init__()
 
         self.audio_encoder = AudioEncoder()
-        self.face_encoder = FaceEncoder()
+        self.face_encoder = FaceEncoder(tighter_box)
 
     def forward(self, audio_sequences, face_sequences):
         audio_embedding = self.audio_encoder(audio_sequences)
@@ -23,13 +23,15 @@ SyncNet submodules
 """
 
 class FaceEncoder(nn.Module):
-    def __init__(self):
+    def __init__(self, tighter_box=False):
         super(FaceEncoder, self).__init__()
+
+        s = 1 if tighter_box else 2
 
         self.encoder = nn.Sequential(
             conv_block(15, 32, kernel_size=(7, 7), stride=1, padding=3),
 
-            conv_block(32, 64, kernel_size=5, stride=(1, 2), padding=1),
+            conv_block(32, 64, kernel_size=5, stride=(1, s), padding=1),
             conv_block(64, 64, kernel_size=3, stride=1, padding=1, residual=True),
             conv_block(64, 64, kernel_size=3, stride=1, padding=1, residual=True),
 
@@ -56,7 +58,7 @@ class FaceEncoder(nn.Module):
         face_embedding = face_embedding.view(face_embedding.size(0), -1)
         face_embedding = F.normalize(face_embedding, p=2, dim=1)
 
-        return face_embedding
+        return face_embedding # [32, 512]
 
 
 class AudioEncoder(nn.Module):
@@ -89,4 +91,4 @@ class AudioEncoder(nn.Module):
         audio_embedding = audio_embedding.view(audio_embedding.size(0), -1)
         audio_embedding = F.normalize(audio_embedding, p=2, dim=1)
         
-        return audio_embedding
+        return audio_embedding # [32, 512]

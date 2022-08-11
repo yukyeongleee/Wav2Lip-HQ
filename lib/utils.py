@@ -50,7 +50,7 @@ def setup_ddp(gpu, ngpus_per_node):
             rank=gpu)
 
 def save_image(args, global_step, dir, images):
-    dir_path = f'train_result/{args.run_id}/{dir}'
+    dir_path = f'{args.save_root}/{args.run_id}/{dir}'
     os.makedirs(dir_path, exist_ok=True)
     
     sample_image = make_grid_image(images).detach().cpu().numpy().transpose([1,2,0]) * 255

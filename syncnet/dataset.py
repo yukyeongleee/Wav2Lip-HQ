@@ -23,7 +23,7 @@ def get_video_list(dataset_root, set_type):    # type: "train" or "val"
 
 
 class AudioVisualDataset(Dataset):
-    def __init__(self, dataset_root, video_step_size, mel_step_size, img_size, fps, set_type, isMaster):
+    def __init__(self, dataset_root, video_step_size, mel_step_size, img_size, fps, set_type, isMaster, tighter_box=False):
         self.video_path_list = get_video_list(dataset_root["video"], set_type)
         self.mel_root = dataset_root["audio"]
 
@@ -44,8 +44,11 @@ class AudioVisualDataset(Dataset):
 
         self.offset_df = pd.read_csv("./assets/offset_edited.csv", index_col='filename')
 
+        self.tighter_box = tighter_box
+
         if isMaster:
-            print(f"Dataset of {self.__len__()} videos constructed for the training.")
+            task = 'validation' if set_type == 'val' else 'training'
+            print(f"Dataset of {self.__len__()} videos constructed for the {task}.")
 
     def get_window(self, vid_name, starting_frame):
         """
@@ -65,7 +68,7 @@ class AudioVisualDataset(Dataset):
             frames_in_window.append(frame)
         return frames_in_window
 
-    def read_window(self, frames_in_window):
+    def read_window(self, frames_in_window, tighter_box=False):
         """
             Read images whose name is in the **frames_in_window** 
         """
@@ -86,7 +89,12 @@ class AudioVisualDataset(Dataset):
         # H x W x 3 * T
         window = np.concatenate(window, axis=2) / 255.  # [96, 96, 15]                   
         window = window.transpose(2, 0, 1)              # [15, 96, 96]
-        window = window[:, window.shape[1]//2:]         # [15, 48, 96]
+
+        if self.tighter_box:
+            quat = window.shape[2]//4
+            window = window[:, window.shape[1]//2:, quat:3*quat]         # [15, 48, 48]
+        else:
+            window = window[:, window.shape[1]//2:]         # [15, 48, 96]
 
         return window
 

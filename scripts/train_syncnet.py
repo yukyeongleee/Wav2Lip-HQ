@@ -33,13 +33,6 @@ def train(gpu, args):
         model.go_step(global_step)
 
         if args.isMaster:
-            # Save and print loss
-            if global_step % args.loss_cycle == 0:
-                model.loss_collector.print_loss(global_step)
-
-                if args.use_wandb:
-                    wandb.log(model.loss_collector.loss_dict)
-                
             # Save image
             if global_step % args.test_cycle == 0:
                 # save_image(model.args, global_step, "train_imgs", model.train_images)
@@ -47,6 +40,13 @@ def train(gpu, args):
                 if args.use_validation:
                     model.do_validation(global_step) 
                     # save_image(model.args, global_step, "valid_imgs", model.valid_images)
+
+            # Save and print loss
+            if global_step % args.loss_cycle == 0:
+                model.loss_collector.print_loss(global_step, args.test_cycle)
+
+                if args.use_wandb:
+                    wandb.log(model.loss_collector.loss_dict)
 
             # Save checkpoint parameters 
             if global_step % args.ckpt_cycle == 0:

@@ -17,7 +17,7 @@ class SyncNetColor(ModelInterface):
         Override the functions called by the SetupModel()
     """
     def set_networks(self):
-        self.S = SyncNet().cuda(self.gpu).train()
+        self.S = SyncNet(self.args.tighter_box).cuda(self.gpu).train()
         # self.D.feature_network.eval()
         # self.D.feature_network.requires_grad_(False)
 
@@ -32,7 +32,8 @@ class SyncNetColor(ModelInterface):
             self.args.img_size, 
             self.args.fps, 
             "train", 
-            self.args.isMaster
+            self.args.isMaster,
+            self.args.tighter_box
         )
         
         if self.args.use_validation:
@@ -43,14 +44,19 @@ class SyncNetColor(ModelInterface):
                 self.args.img_size, 
                 self.args.fps, 
                 "val", 
-                self.args.isMaster
+                self.args.isMaster,
+                self.args.tighter_box
             )
 
     def set_validation(self):
         if self.args.use_validation:
-            self.valid_dataloader = DataLoader(self.valid_dataset, batch_size=5, num_workers=8, drop_last=True)
+            sampler = torch.utils.data.distributed.DistributedSampler(self.train_dataset) if self.args.use_mGPU else None
+            self.valid_dataloader = DataLoader(self.valid_dataset, batch_size=self.args.batch_per_gpu, sampler=sampler, num_workers=8, drop_last=True)
             faces, mel, label = next(iter(self.valid_dataloader))
             self.valid_faces, self.valid_mel, self.valid_label = faces.to(self.gpu), mel.to(self.gpu), label.to(self.gpu)    
+            # sampler = torch.utils.data.distributed.DistributedSampler(self.train_dataset) if self.args.use_mGPU else None
+            # self.valid_dataloader = DataLoader(self.valid_dataset, batch_size=5, pin_memory=True, sampler=sampler, num_workers=8, drop_last=True)
+            # self.valid_iterator = iter(self.valid_dataloader)
 
 
     def set_loss_collector(self):
@@ -68,7 +74,7 @@ class SyncNetColor(ModelInterface):
 
         # update S
         loss_S = self.loss_collector.get_loss_S(self.dict)
-        utils.update_net(self.opt_S, loss_S)  # optimizer도 새로 정의해줘야 함
+        utils.update_net(self.opt_S, loss_S) 
 
 
     def run_S(self):
@@ -80,7 +86,15 @@ class SyncNetColor(ModelInterface):
 
     def do_validation(self, step):
         with torch.no_grad():
-            audio_embedding, video_embedding = self.S(self.valid_mel, self.valid_faces)
+            audio_embedding, face_embedding = self.S(self.valid_mel, self.valid_faces)
+            
+            valid_dict = {}
+            valid_dict["audio_embedding"] = audio_embedding
+            valid_dict["face_embedding"] = face_embedding
+            valid_dict["label"] = self.valid_label
+
+            # update S
+            loss_S = self.loss_collector.get_loss_S(valid_dict, True)
 
 
     @property
