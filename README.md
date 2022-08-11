@@ -76,14 +76,34 @@
 ## About The Project
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+High-quality Wav2Lip, which can be trained on **arbitrary datasets**. 
+As long as the training and inference scripts, the scripts for the [required preprocessings](https://github.com/Rudrabha/Wav2Lip#training-on-datasets-other-than-lrs2) are provided.
 
-### Changes from the [official implementation](https://github.com/Rudrabha/Wav2Lip)
-- More efficient GPU usage
-  - Multi-GPU supported.
-  - To avoid bottleneck, mel-spectrograms are computed and saved as .npy files beforehand. (Previously, STFT is computed everytime when the `__getitem__` function is called)
-- Available for arbitrary datasets
-  - The codes for dataset preprocessing(fps and sync corrections) are provided. 
-- Readability increased!
+### Preprocessing
+#### Audio
+- Convert the audio sampling rate to **16000 Hz**. 
+- Compute and save the mel-spectrogram for each audio. 
+
+#### Video
+- Convert the video frame rate to **25 fps**. 
+- Extract and save raw frames(no face detection) from each video.
+- Compute the offset between each audio and video pair by using the [pretrained SyncNet][repo-syncnet]. The offset values are needed for the **sync-correction** of the dataset. 
+- **[Not provided]** Estimate the face bounding box. Crop and save the bounding box region for each frame. 
+  - **Recommendation.** Use any high performance face detection tool **rather than s3fd**(the one used in [here]()). I used [InsightFace](https://github.com/deepinsight/insightface). 
+
+
+### Changes from the [official implementation][repo-wav2lip]
+#### Dataset
+- Any datasets are available.
+
+#### GPU usage
+- Multi-GPU training is supported.
+- To avoid bottleneck, mel-spectrograms are computed and saved as .npy files beforehand. (Previously, STFT is computed everytime when the `__getitem__` function is called)
+ 
+
+#### Model Architecture
+- The `FaceEncoder` of SyncNet takes **48 x 48 lip region image**, rather than 48 x 96 lower half image. (conditioned by the `tighter_box` option) 
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -92,12 +112,7 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Installation
-
-This is an example of how to list things you need to use the software and how to install them.
 
 ```sh
 pip install -r requirements.txt
@@ -112,13 +127,9 @@ pip install -r requirements.txt
 
 ### Preprocess
 
+To begin with, the audio files are resampled with the sampling rate of 16000Hz. Also, STFT is applied to the resampled audio signals to obtain corresponding mel-spectrograms.
 ```sh
 cd scripts/preprocess
-```
-
-To begin with, the audio files are resampled with the sampling rate of 16000Hz. Also, STFT is applied to the resampled audio signals to obtain corresponding mel-spectrograms.
-
-``` sh
 python process_audio.py
 ```
 
@@ -128,25 +139,26 @@ Since the video files downloaded from YouTube have different frame rates(FPS), w
 python process_video.py
 ```
 
-To avoid the bottleneck at the data loading period, we crop the face region from each frame and save it. (No resizing, Not square) 
+#### Sync-correction (using the official SyncNet)
+The [official SyncNet implementation][repo-syncnet] and its pretrained checkpoint are used for sync-correction. All the dependencies should be installed before moving on to the next step. 
 ``` sh
-python extract_face.py
+git clone https://github.com/joonson/syncnet_python.git
+cd syncnet_python 
 ```
 
-**[For SyncNet Traning]** Training [SyncNet](https://github.com/joonson/syncnet_python) requires images of 224 x 224. The face images obtained by the previous step are padded to make a square and then resized.
-
+Two python files(*get_offset.py* and *newSyncNetInstance.py*) in the *scripts/preprocess/sync-correction* directory need to be located in the syncnet_python directory. The shift value that minimizes syncnet loss is selected as offset. The offset value obtained for each video is recorded in the *output/offset.csv* file. If the input videos are not separated into frame images, adding `--separate_frames` option at the end of the line will help you.
 ``` sh
-python resize_face.py
+python get_offset.py # --separate_frames
 ```
+
 
 ### Train
 
 ```sh
-git clone https://github.com/Innerverz-AI/CodeTemplate.git
-cd CodeTemplate 
-python scripts/train.py {run_id}
-
-# ex) python scripts/train.py first_try
+git clone https://github.com/yukyeongleee/Wav2Lip-HQ.git
+cd Wav2Lip-HQ
+python scripts/train_syncnet.py {run_id} # SyncNet training
+python scripts/train_wav2lip.py {run_id} # Wav2Lip training
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -155,10 +167,10 @@ python scripts/train.py {run_id}
 <!-- TDL -->
 ## TDL
 
-- [x] Add dataset preprocessing code
-- [ ] Add sync-correction code
+- [x] Add dataset preprocessing scripts
+- [x] Add sync-correction scripts
 
-See the [open issues](https://github.com/Innerverz-AI/CodeTemplate/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/yukyeongleee/Wav2Lip-HQ/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -193,7 +205,8 @@ Project Link: [https://github.com/yukyeongleee/Wav2Lip-HQ](https://github.com/yu
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Rudrabha/Wav2Lip](https://github.com/Rudrabha/Wav2Lip): The official implementation
+* [Rudrabha/Wav2Lip][repo-wav2lip]: The official implementation
+* [joonson/syncnet_python][repo-syncnet]: The official implementation
 * [Innerverz-AI/CodeTemplate](https://github.com/Innerverz-AI/CodeTemplate)
 * [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
@@ -211,3 +224,6 @@ Project Link: [https://github.com/yukyeongleee/Wav2Lip-HQ](https://github.com/yu
 [issues-shield]: https://img.shields.io/github/issues/yukyeongleee/Wav2Lip-HQ.svg?style=for-the-badge
 [issues-url]: https://github.com/yukyeongleee/Wav2Lip-HQ/issues
 [product-screenshot]: images/screenshot.png
+
+[repo-wav2lip]: https://github.com/Rudrabha/Wav2Lip
+[repo-syncnet]: https://github.com/joonson/syncnet_python
